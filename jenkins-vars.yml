@@ -1,7 +1,7 @@
 ---
 
 # jenkins variables
-project_name: docker-calibre
+project_name: docker-gnucash
 external_type: github_stable
 release_type: stable
 release_tag: latest
@@ -9,14 +9,14 @@ ls_branch: master
 repo_vars:
   - EXT_GIT_BRANCH = 'master'
   - EXT_USER = 'kovidgoyal'
-  - EXT_REPO = 'calibre'
-  - BUILD_VERSION_ARG = 'CALIBRE_RELEASE'
+  - EXT_REPO = 'gnucash'
+  - BUILD_VERSION_ARG = 'GNUCASH_RELEASE'
   - LS_USER = 'linuxserver'
-  - LS_REPO = 'docker-calibre'
-  - CONTAINER_NAME = 'calibre'
-  - DOCKERHUB_IMAGE = 'linuxserver/calibre'
-  - DEV_DOCKERHUB_IMAGE = 'lsiodev/calibre'
-  - PR_DOCKERHUB_IMAGE = 'lspipepr/calibre'
+  - LS_REPO = 'docker-gnucash'
+  - CONTAINER_NAME = 'gnucash'
+  - DOCKERHUB_IMAGE = 'linuxserver/gnucash'
+  - DEV_DOCKERHUB_IMAGE = 'lsiodev/gnucash'
+  - PR_DOCKERHUB_IMAGE = 'lspipepr/gnucash'
   - DIST_IMAGE = 'ubuntu'
   - MULTIARCH = 'false'
   - CI = 'true'

@@ -19,14 +19,14 @@ pipeline {
     SCARF_TOKEN=credentials('scarf_api_key')
     EXT_GIT_BRANCH = 'master'
     EXT_USER = 'kovidgoyal'
-    EXT_REPO = 'calibre'
-    BUILD_VERSION_ARG = 'CALIBRE_RELEASE'
+    EXT_REPO = 'gnucash'
+    BUILD_VERSION_ARG = 'GNUCASH_RELEASE'
     LS_USER = 'linuxserver'
-    LS_REPO = 'docker-calibre'
-    CONTAINER_NAME = 'calibre'
-    DOCKERHUB_IMAGE = 'linuxserver/calibre'
-    DEV_DOCKERHUB_IMAGE = 'lsiodev/calibre'
-    PR_DOCKERHUB_IMAGE = 'lspipepr/calibre'
+    LS_REPO = 'docker-gnucash'
+    CONTAINER_NAME = 'gnucash'
+    DOCKERHUB_IMAGE = 'linuxserver/gnucash'
+    DEV_DOCKERHUB_IMAGE = 'lsiodev/gnucash'
+    PR_DOCKERHUB_IMAGE = 'lspipepr/gnucash'
     DIST_IMAGE = 'ubuntu'
     MULTIARCH = 'false'
     CI = 'true'
@@ -268,7 +268,7 @@ pipeline {
               set -e
               TEMPDIR=$(mktemp -d)
               docker pull ghcr.io/linuxserver/jenkins-builder:latest
-              docker run --rm -e CONTAINER_NAME=${CONTAINER_NAME} -e GITHUB_BRANCH=master -v ${TEMPDIR}:/ansible/jenkins ghcr.io/linuxserver/jenkins-builder:latest 
+              docker run --rm -e CONTAINER_NAME=${CONTAINER_NAME} -e GITHUB_BRANCH=master -v ${TEMPDIR}:/ansible/jenkins ghcr.io/linuxserver/jenkins-builder:latest
               # Stage 1 - Jenkinsfile update
               if [[ "$(md5sum Jenkinsfile | awk '{ print $1 }')" != "$(md5sum ${TEMPDIR}/docker-${CONTAINER_NAME}/Jenkinsfile | awk '{ print $1 }')" ]]; then
                 mkdir -p ${TEMPDIR}/repo
@@ -407,7 +407,7 @@ pipeline {
              "merge_requests_access_level":"disabled",\
              "repository_access_level":"enabled",\
              "visibility":"public"}' '''
-      } 
+      }
     }
     /* #######################
            Scarf.sh package registry
@@ -421,23 +421,23 @@ pipeline {
       steps{
         sh '''#! /bin/bash
               set -e
-              PACKAGE_UUID=$(curl -X GET -H "Authorization: Bearer ${SCARF_TOKEN}" https://scarf.sh/api/v1/organizations/linuxserver-ci/packages | jq -r '.[] | select(.name=="linuxserver/calibre") | .uuid')
+              PACKAGE_UUID=$(curl -X GET -H "Authorization: Bearer ${SCARF_TOKEN}" https://scarf.sh/api/v1/organizations/linuxserver-ci/packages | jq -r '.[] | select(.name=="linuxserver/gnucash") | .uuid')
               if [ -z "${PACKAGE_UUID}" ]; then
                 echo "Adding package to Scarf.sh"
                 curl -sX POST https://scarf.sh/api/v1/organizations/linuxserver-ci/packages \
                   -H "Authorization: Bearer ${SCARF_TOKEN}" \
                   -H "Content-Type: application/json" \
-                  -d '{"name":"linuxserver/calibre",\
+                  -d '{"name":"linuxserver/gnucash",\
                        "shortDescription":"example description",\
                        "libraryType":"docker",\
-                       "website":"https://github.com/linuxserver/docker-calibre",\
-                       "backendUrl":"https://ghcr.io/linuxserver/calibre",\
-                       "publicUrl":"https://lscr.io/linuxserver/calibre"}' || :
+                       "website":"https://github.com/linuxserver/docker-gnucash",\
+                       "backendUrl":"https://ghcr.io/linuxserver/gnucash",\
+                       "publicUrl":"https://lscr.io/linuxserver/gnucash"}' || :
               else
                 echo "Package already exists on Scarf.sh"
               fi
            '''
-      } 
+      }
     }
     /* ###############
        Build Container
@@ -455,16 +455,16 @@ pipeline {
         sh "docker build \
           --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
           --label \"org.opencontainers.image.authors=linuxserver.io\" \
-          --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-calibre/packages\" \
-          --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-calibre\" \
-          --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-calibre\" \
+          --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-gnucash/packages\" \
+          --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-gnucash\" \
+          --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-gnucash\" \
           --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
           --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
           --label \"org.opencontainers.image.vendor=linuxserver.io\" \
           --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
           --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-          --label \"org.opencontainers.image.title=Calibre\" \
-          --label \"org.opencontainers.image.description=[Calibre](https://calibre-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
+          --label \"org.opencontainers.image.title=Gnucash\" \
+          --label \"org.opencontainers.image.description=[Gnucash](https://gnucash-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
           --no-cache --pull -t ${IMAGE}:${META_TAG} \
           --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."
       }
@@ -485,16 +485,16 @@ pipeline {
             sh "docker build \
               --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
               --label \"org.opencontainers.image.authors=linuxserver.io\" \
-              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-calibre/packages\" \
-              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-calibre\" \
-              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-calibre\" \
+              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-gnucash/packages\" \
+              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-gnucash\" \
+              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-gnucash\" \
               --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
               --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
               --label \"org.opencontainers.image.vendor=linuxserver.io\" \
               --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
               --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-              --label \"org.opencontainers.image.title=Calibre\" \
-              --label \"org.opencontainers.image.description=[Calibre](https://calibre-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
+              --label \"org.opencontainers.image.title=Gnucash\" \
+              --label \"org.opencontainers.image.description=[Gnucash](https://gnucash-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
               --no-cache --pull -t ${IMAGE}:amd64-${META_TAG} \
               --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."
           }
@@ -512,16 +512,16 @@ pipeline {
             sh "docker build \
               --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
               --label \"org.opencontainers.image.authors=linuxserver.io\" \
-              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-calibre/packages\" \
-              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-calibre\" \
-              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-calibre\" \
+              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-gnucash/packages\" \
+              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-gnucash\" \
+              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-gnucash\" \
               --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
               --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
               --label \"org.opencontainers.image.vendor=linuxserver.io\" \
               --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
               --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-              --label \"org.opencontainers.image.title=Calibre\" \
-              --label \"org.opencontainers.image.description=[Calibre](https://calibre-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
+              --label \"org.opencontainers.image.title=Gnucash\" \
+              --label \"org.opencontainers.image.description=[Gnucash](https://gnucash-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
               --no-cache --pull -f Dockerfile.armhf -t ${IMAGE}:arm32v7-${META_TAG} \
               --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."
             sh "docker tag ${IMAGE}:arm32v7-${META_TAG} ghcr.io/linuxserver/lsiodev-buildcache:arm32v7-${COMMIT_SHA}-${BUILD_NUMBER}"
@@ -546,16 +546,16 @@ pipeline {
             sh "docker build \
               --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
               --label \"org.opencontainers.image.authors=linuxserver.io\" \
-              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-calibre/packages\" \
-              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-calibre\" \
-              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-calibre\" \
+              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-gnucash/packages\" \
+              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-gnucash\" \
+              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-gnucash\" \
               --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
               --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
               --label \"org.opencontainers.image.vendor=linuxserver.io\" \
               --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
               --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-              --label \"org.opencontainers.image.title=Calibre\" \
-              --label \"org.opencontainers.image.description=[Calibre](https://calibre-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
+              --label \"org.opencontainers.image.title=Gnucash\" \
+              --label \"org.opencontainers.image.description=[Gnucash](https://gnucash-ebook.com/) is a powerful and easy to use e-book manager. Users say it’s outstanding and a must-have. It’ll allow you to do nearly everything and it takes things a step beyond normal e-book software. It’s also completely free and open source and great for both casual users and computer experts.\" \
               --no-cache --pull -f Dockerfile.aarch64 -t ${IMAGE}:arm64v8-${META_TAG} \
               --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."
             sh "docker tag ${IMAGE}:arm64v8-${META_TAG} ghcr.io/linuxserver/lsiodev-buildcache:arm64v8-${COMMIT_SHA}-${BUILD_NUMBER}"
@@ -867,10 +867,10 @@ pipeline {
                       docker manifest annotate ${MANIFESTIMAGE}:${SEMVER} ${MANIFESTIMAGE}:arm64v8-${SEMVER} --os linux --arch arm64 --variant v8
                     fi
                     docker manifest push --purge ${MANIFESTIMAGE}:latest
-                    docker manifest push --purge ${MANIFESTIMAGE}:${META_TAG} 
-                    docker manifest push --purge ${MANIFESTIMAGE}:${EXT_RELEASE_TAG} 
+                    docker manifest push --purge ${MANIFESTIMAGE}:${META_TAG}
+                    docker manifest push --purge ${MANIFESTIMAGE}:${EXT_RELEASE_TAG}
                     if [ -n "${SEMVER}" ]; then
-                      docker manifest push --purge ${MANIFESTIMAGE}:${SEMVER} 
+                      docker manifest push --purge ${MANIFESTIMAGE}:${SEMVER}
                     fi
                   done
                '''

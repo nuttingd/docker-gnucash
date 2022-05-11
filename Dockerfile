@@ -3,7 +3,7 @@ FROM ghcr.io/linuxserver/baseimage-rdesktop-web:bionic
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-ARG CALIBRE_RELEASE
+ARG GNUCASH_RELEASE
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="aptalca"
 
@@ -37,21 +37,21 @@ RUN \
     xz-utils && \
   apt-get install -y \
     speech-dispatcher && \
-  echo "**** install calibre ****" && \
+  echo "**** install gnucash ****" && \
   mkdir -p \
-    /opt/calibre && \
-  if [ -z ${CALIBRE_RELEASE+x} ]; then \
-    CALIBRE_RELEASE=$(curl -sX GET "https://api.github.com/repos/kovidgoyal/calibre/releases/latest" \
+    /opt/gnucash && \
+  if [ -z ${GNUCASH_RELEASE+x} ]; then \
+    GNUCASH_RELEASE=$(curl -sX GET "https://api.github.com/repos/kovidgoyal/gnucash/releases/latest" \
     | jq -r .tag_name); \
   fi && \
-  CALIBRE_VERSION="$(echo ${CALIBRE_RELEASE} | cut -c2-)" && \
-  CALIBRE_URL="https://download.calibre-ebook.com/${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz" && \
+  GNUCASH_VERSION="$(echo ${GNUCASH_RELEASE} | cut -c2-)" && \
+  GNUCASH_URL="https://download.gnucash-ebook.com/${GNUCASH_VERSION}/gnucash-${GNUCASH_VERSION}-x86_64.txz" && \
   curl -o \
-    /tmp/calibre-tarball.txz -L \
-    "$CALIBRE_URL" && \
-  tar xvf /tmp/calibre-tarball.txz -C \
-    /opt/calibre && \
-  /opt/calibre/calibre_postinstall && \
+    /tmp/gnucash-tarball.txz -L \
+    "$GNUCASH_URL" && \
+  tar xvf /tmp/gnucash-tarball.txz -C \
+    /opt/gnucash && \
+  /opt/gnucash/gnucash_postinstall && \
   dbus-uuidgen > /etc/machine-id && \
   echo "**** cleanup ****" && \
   apt-get clean && \
