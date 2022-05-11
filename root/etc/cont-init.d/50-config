@@ -23,4 +23,4 @@ fi
 # permissions
 chown -R abc:abc \
     /config \
-    /opt/gnucash
+    /usr/bin/gnucash
