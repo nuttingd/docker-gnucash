@@ -1,11 +1,5 @@
-FROM ghcr.io/linuxserver/baseimage-rdesktop-web:bionic
-
-# set version label
-ARG BUILD_DATE
-ARG VERSION
-ARG GNUCASH_RELEASE
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-LABEL maintainer="aptalca"
+FROM --platform=$TARGETPLATFORM ghcr.io/linuxserver/baseimage-rdesktop-web:focal
+ARG TARGETPLATFORM
 
 ENV \
   CUSTOM_PORT="8080" \
