@@ -10,7 +10,12 @@ RUN \
   echo "**** install runtime packages ****" && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
-    gnucash && \
+    gnucash \
+    # Thank you docs: https://www.gnucash.org/docs/v4/C/gnucash-guide/basics-files1.html#ftn.idm1300
+    libdbd-sqlite3 \
+    libdbd-pgsql \
+    libdbd-mysql \
+    && \
   dbus-uuidgen > /etc/machine-id && \
   echo "**** cleanup ****" && \
   apt-get clean && \
